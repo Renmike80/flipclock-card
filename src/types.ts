@@ -37,7 +37,10 @@ export interface BackgroundOptions {
   // 'solid': a single flat color (use `color`).
   // 'gradient': a custom linear gradient (use `colors` + `direction`).
   // 'preset': one of the built-in named gradients (use `preset`).
-  type?: 'solid' | 'gradient' | 'preset';
+  // 'dark-outline': background and flip cards share the same near-black (or
+  // custom) shade via `color`, with the cards outlined in white so they stay
+  // distinguishable; everything else keeps its existing light text/icons.
+  type?: 'solid' | 'gradient' | 'preset' | 'dark-outline';
   color?: string;
   colors?: string[];
   direction?: string;

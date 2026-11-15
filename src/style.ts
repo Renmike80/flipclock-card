@@ -585,6 +585,35 @@ function buildBackgroundCss(config: FlipClockCardConfig): string {
     return `ha-card { background: ${bg.color}; }`;
   }
 
+  if (bg.type === 'dark-outline') {
+    const shade = bg.color || '#0a0a0a';
+    return `
+      ha-card { background: ${shade}; }
+      .flip-clock .flip-clock-group .flip-clock-list {
+        box-sizing: border-box;
+        border: 2px solid #fff;
+      }
+      .flip-clock .flip-clock-group .flip-clock-list .flip-clock-list-item-inner > .top,
+      .flip-clock .flip-clock-group .flip-clock-list .flip-clock-list-item-inner > .bottom,
+      .flip-clock .flip-clock-group .flip-clock-list .flip-clock-list-item-inner .top:before {
+        background: ${shade};
+      }
+      .flip-clock .flip-clock-divider:before,
+      .flip-clock .flip-clock-divider:after {
+        background: #fff;
+      }
+      .fc-notif-fab,
+      .fc-format-toggle {
+        box-sizing: border-box;
+        border: 2px solid #fff;
+        background: ${shade};
+      }
+      .fc-notification {
+        border-bottom: 2px solid #fff;
+      }
+    `;
+  }
+
   let colors: string[] | undefined;
   if (bg.type === 'gradient' && bg.colors && bg.colors.length >= 2) {
     colors = bg.colors;
