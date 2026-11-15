@@ -51,6 +51,9 @@ export const style = html`
 
     .fc-time {
       grid-area: fc-time;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .fc-date {

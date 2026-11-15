@@ -48,6 +48,9 @@ var Jn=Object.create;var Ae=Object.defineProperty;var ct=Object.getOwnPropertyDe
 
     .fc-time {
       grid-area: fc-time;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .fc-date {
