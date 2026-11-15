@@ -12,6 +12,43 @@ export const style = html`
       height: 100%;
       display: flex;
       flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .fc-notification {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      display: flex;
+      align-items: baseline;
+      gap: 0.5em;
+      padding: 0.6em 1em;
+      background: rgba(20, 22, 26, 0.92);
+      color: #f0f0f0;
+      transform: translateY(-100%);
+      transition: transform 0.35s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    }
+
+    .fc-notification.visible {
+      transform: translateY(0);
+    }
+
+    .fc-notification-title {
+      font-weight: 700;
+      font-size: 1.1em;
+      white-space: nowrap;
+    }
+
+    .fc-notification-message {
+      font-weight: 300;
+      font-size: 1em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .fc-content {

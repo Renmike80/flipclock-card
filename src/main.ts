@@ -30,6 +30,7 @@ export class FlipClockCard extends LitElement {
 
     setInterval(this.updateTimezones.bind(this), 500);
     setInterval(this.updateMeridiemBottom.bind(this), 500);
+    setInterval(this.updateNotificationBanner.bind(this), 500);
   }
 
   public setConfig(config: FlipClockCardConfig): void {
@@ -94,6 +95,10 @@ export class FlipClockCard extends LitElement {
     }
     return html`
       <ha-card>
+        <div class="fc-notification" id="fc_notification">
+          <span class="fc-notification-title" id="fc_notification_title"></span>
+          <span class="fc-notification-message" id="fc_notification_message"></span>
+        </div>
         <div class="fc-content">
           ${this.showValue(this._config.title)
             ? html`
@@ -163,6 +168,23 @@ export class FlipClockCard extends LitElement {
     if (this._config?.time?.meridiemPosition !== 'bottom') return;
     const el = this.shadowRoot?.getElementById('fc_meridiem_bottom');
     if (el) el.innerHTML = this.formatMeridiem(new Date());
+  }
+
+  private updateNotificationBanner(): void {
+    if (!this._hass) return;
+    const bannerEl = this.shadowRoot?.getElementById('fc_notification');
+    if (!bannerEl) return;
+    const timer = this._hass.states['timer.dashboard_notification_clear'];
+    const title = this._hass.states['input_text.dashboard_last_notification_title'];
+    const message = this._hass.states['input_text.dashboard_last_notification_message'];
+    const active = timer?.state === 'active' && !!title?.state;
+    bannerEl.classList.toggle('visible', active);
+    if (active) {
+      const titleEl = this.shadowRoot?.getElementById('fc_notification_title');
+      const messageEl = this.shadowRoot?.getElementById('fc_notification_message');
+      if (titleEl) titleEl.textContent = title.state;
+      if (messageEl) messageEl.textContent = message?.state || '';
+    }
   }
 
   private formatTimezone(tzId: string): string {
