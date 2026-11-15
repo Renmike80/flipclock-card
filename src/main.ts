@@ -131,32 +131,7 @@ export class FlipClockCard extends LitElement {
       showSeconds: this._config.time.showSeconds,
     });
 
-    this.applyTwelveHourSizeCompensation();
-
     return el;
-  }
-
-  // The AM/PM label (12-hour face only) renders as an absolutely-positioned
-  // child of the minutes group, but still nudges that group's flex-measured
-  // width slightly wider in some browser engines. Shrink the clock a touch in
-  // 12-hour mode so the total row still fits without wrapping. FlipClock
-  // periodically regenerates its own internal DOM on each digit change, which
-  // would wipe a one-off inline style, so this sets a CSS custom property on
-  // the stable container we own instead, read by a static rule in style.ts
-  // that keeps applying across any number of FlipClock-internal re-renders.
-  private applyTwelveHourSizeCompensation(): void {
-    const container = this.shadowRoot?.querySelector('.fc-time') as HTMLElement | null;
-    if (!container) return;
-    const isTwelveHour = this._effectiveFace === 'TwelveHourClock';
-    container.classList.toggle('twelve-hour-mode', isTwelveHour);
-    if (isTwelveHour && this._config.time.cardSize) {
-      const match = String(this._config.time.cardSize).match(/^([\d.]+)(\D*)$/);
-      if (match) {
-        const value = parseFloat(match[1]) * 0.85;
-        const unit = match[2] || 'px';
-        container.style.setProperty('--fc-12h-font-size', `${value}${unit}`);
-      }
-    }
   }
 
   protected shouldUpdate(): boolean {
@@ -167,12 +142,6 @@ export class FlipClockCard extends LitElement {
     this._firstUpdated = true;
     this.shadowRoot?.getElementById('fc_notif_fab')?.addEventListener('click', () => this.toggleNotificationList());
     this.shadowRoot?.getElementById('fc_format_toggle')?.addEventListener('click', () => this.toggleTimeFormat());
-    // On first render, .fc-time doesn't exist in the DOM yet at the point
-    // createClockElement() runs (it's still being built as part of this very
-    // template), so the compensation class/variable silently no-ops there
-    // when the clock loads directly into 12-hour mode (e.g. from a saved
-    // preference). Apply it again now that the DOM is actually committed.
-    this.applyTwelveHourSizeCompensation();
   }
 
   protected render(): TemplateResult | void {

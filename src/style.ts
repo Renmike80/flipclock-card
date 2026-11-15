@@ -229,10 +229,6 @@ export const style = html`
       justify-content: center;
     }
 
-    .fc-time.twelve-hour-mode .flip-clock {
-      font-size: var(--fc-12h-font-size, inherit);
-    }
-
     .fc-date {
       grid-area: fc-date;
     }
@@ -290,7 +286,7 @@ export const style = html`
       font-family: 'Helvetica Neue', Helvetica, sans-serif;
       box-sizing: border-box;
       align-items: flex-end;
-      padding: 1em;
+      padding: 0.4em;
     }
     .flip-clock .flip-clock-group {
       display: flex;
@@ -337,7 +333,7 @@ export const style = html`
       color: #ccc;
     }
     .flip-clock .flip-clock-group .flip-clock-list:not(:last-child) {
-      margin-right: 0.333em;
+      margin-right: 0.18em;
     }
     .flip-clock .flip-clock-group .flip-clock-list:not(.flip) .active .flip-clock-list-item-inner {
       z-index: 4;
@@ -483,7 +479,7 @@ export const style = html`
     }
     .flip-clock .flip-clock-divider {
       position: relative;
-      width: 1.5em;
+      width: 1.1em;
       height: 8.4em;
     }
     .flip-clock .flip-clock-divider:before,
