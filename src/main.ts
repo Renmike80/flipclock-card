@@ -152,7 +152,7 @@ export class FlipClockCard extends LitElement {
     if (isTwelveHour && this._config.time.cardSize) {
       const match = String(this._config.time.cardSize).match(/^([\d.]+)(\D*)$/);
       if (match) {
-        const value = parseFloat(match[1]) * 0.3;
+        const value = parseFloat(match[1]) * 0.85;
         const unit = match[2] || 'px';
         container.style.setProperty('--fc-12h-font-size', `${value}${unit}`);
       }
@@ -167,6 +167,12 @@ export class FlipClockCard extends LitElement {
     this._firstUpdated = true;
     this.shadowRoot?.getElementById('fc_notif_fab')?.addEventListener('click', () => this.toggleNotificationList());
     this.shadowRoot?.getElementById('fc_format_toggle')?.addEventListener('click', () => this.toggleTimeFormat());
+    // On first render, .fc-time doesn't exist in the DOM yet at the point
+    // createClockElement() runs (it's still being built as part of this very
+    // template), so the compensation class/variable silently no-ops there
+    // when the clock loads directly into 12-hour mode (e.g. from a saved
+    // preference). Apply it again now that the DOM is actually committed.
+    this.applyTwelveHourSizeCompensation();
   }
 
   protected render(): TemplateResult | void {
