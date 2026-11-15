@@ -229,6 +229,10 @@ export const style = html`
       justify-content: center;
     }
 
+    .fc-time.twelve-hour-mode .flip-clock {
+      font-size: var(--fc-12h-font-size, inherit);
+    }
+
     .fc-date {
       grid-area: fc-date;
     }
