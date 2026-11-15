@@ -307,6 +307,7 @@ var Jn=Object.create;var Ae=Object.defineProperty;var ct=Object.getOwnPropertyDe
     }
     .flip-clock .flip-clock-group .flip-clock-label.flip-clock-meridium {
       position: absolute;
+      z-index: 10;
       font-size: 0.55em;
       line-height: 1;
       top: auto;
