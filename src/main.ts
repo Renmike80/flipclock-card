@@ -139,10 +139,10 @@ export class FlipClockCard extends LitElement {
     const showMeridiemHere =
       this._config.time.meridiemPosition === 'bottom' && this._config.time.face === 'TwelveHourClock';
     return html` <div class="fc-date">
-      <span class="fc-date-text">${this.formatDate(this._date)}</span>
       ${showMeridiemHere
         ? html`<span class="fc-meridiem-bottom" id="fc_meridiem_bottom">${this.formatMeridiem(this._date)}</span>`
         : ''}
+      <span class="fc-date-text">${this.formatDate(this._date)}</span>
     </div>`;
   }
 

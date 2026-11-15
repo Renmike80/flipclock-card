@@ -54,10 +54,9 @@ export const style = html`
     }
 
     .fc-meridiem-bottom {
-      font-size: 0.8em;
-      font-weight: 200;
+      font-size: 1.2em;
+      font-weight: 700;
       text-transform: uppercase;
-      opacity: 0.8;
     }
 
     .fc-time {
@@ -158,7 +157,7 @@ export const style = html`
       height: 6em;
       position: relative;
       border-radius: 0.75rem;
-      box-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.24), 0 3px 8px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 6px 14px rgba(0, 0, 0, 0.3);
       font-weight: bold;
       color: #ccc;
     }
@@ -466,8 +465,9 @@ export function customStyles(config: FlipClockCardConfig): TemplateResult {
     meridiemBottom
       ? `.flip-clock .flip-clock-group .flip-clock-label.flip-clock-meridium { display: none; }`
       : '',
-    meridiemFontSize && !meridiemBottom
-      ? `.flip-clock .flip-clock-group .flip-clock-label.flip-clock-meridium { font-size: ${meridiemFontSize}; }`
+    meridiemFontSize
+      ? `.flip-clock .flip-clock-group .flip-clock-label.flip-clock-meridium { font-size: ${meridiemFontSize}; }
+         .fc-meridiem-bottom { font-size: ${meridiemFontSize}; }`
       : '',
     meridiemFontFamily
       ? `.flip-clock .flip-clock-group .flip-clock-label.flip-clock-meridium { font-family: ${meridiemFontFamily}; }
