@@ -10,6 +10,7 @@ export interface TimeOptions {
   showSeconds: boolean;
   meridiemFontSize?: string;
   meridiemFontFamily?: string;
+  meridiemOffset?: string;
 }
 
 export interface DateOptions {

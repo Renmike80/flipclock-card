@@ -44,6 +44,7 @@ export class FlipClockCard extends LitElement {
           showSeconds: false,
           meridiemFontSize: null,
           meridiemFontFamily: null,
+          meridiemOffset: null,
         },
         timezones: [],
         date: {

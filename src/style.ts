@@ -365,6 +365,7 @@ export function customStyles(config: FlipClockCardConfig): TemplateResult {
   const dateFontFamily = config?.date?.fontFamily;
   const meridiemFontSize = config?.time?.meridiemFontSize;
   const meridiemFontFamily = config?.time?.meridiemFontFamily;
+  const meridiemOffset = config?.time?.meridiemOffset;
 
   const css = [
     dateFontSize ? `.fc-date { font-size: ${dateFontSize}; }` : '',
@@ -374,6 +375,12 @@ export function customStyles(config: FlipClockCardConfig): TemplateResult {
       : '',
     meridiemFontFamily
       ? `.flip-clock .flip-clock-group .flip-clock-label.flip-clock-meridium { font-family: ${meridiemFontFamily}; }`
+      : '',
+    // Base stylesheet uses translate(0.5em, -50%) to push the label away
+    // from the last digit group. Only the horizontal (first) value is
+    // meant to be adjustable here; vertical centering stays at -50%.
+    meridiemOffset
+      ? `.flip-clock .flip-clock-group .flip-clock-label.flip-clock-meridium { transform: translate(${meridiemOffset}, -50%); }`
       : '',
   ]
     .filter(Boolean)
