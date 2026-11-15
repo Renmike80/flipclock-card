@@ -380,10 +380,15 @@ export function customStyles(config: FlipClockCardConfig): TemplateResult {
   const meridiemFontSize = config?.time?.meridiemFontSize;
   const meridiemFontFamily = config?.time?.meridiemFontFamily;
   const meridiemOffset = config?.time?.meridiemOffset;
+  const cardSize = config?.time?.cardSize;
 
   const css = [
     dateFontSize ? `.fc-date { font-size: ${dateFontSize}; }` : '',
     dateFontFamily ? `.fc-date { font-family: ${dateFontFamily}; }` : '',
+    // .flip-clock's font-size is the base unit every card dimension (width,
+    // height, digit font-size, divider size) is defined in em relative to,
+    // so overriding it alone scales the whole clock proportionally.
+    cardSize ? `.flip-clock { font-size: ${cardSize}; }` : '',
     meridiemFontSize
       ? `.flip-clock .flip-clock-group .flip-clock-label.flip-clock-meridium { font-size: ${meridiemFontSize}; }`
       : '',

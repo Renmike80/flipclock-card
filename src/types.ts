@@ -11,6 +11,7 @@ export interface TimeOptions {
   meridiemFontSize?: string;
   meridiemFontFamily?: string;
   meridiemOffset?: string;
+  cardSize?: string;
 }
 
 export interface DateOptions {
