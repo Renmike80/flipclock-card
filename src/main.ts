@@ -152,7 +152,7 @@ export class FlipClockCard extends LitElement {
     if (isTwelveHour && this._config.time.cardSize) {
       const match = String(this._config.time.cardSize).match(/^([\d.]+)(\D*)$/);
       if (match) {
-        const value = parseFloat(match[1]) * 0.7;
+        const value = parseFloat(match[1]) * 0.3;
         const unit = match[2] || 'px';
         container.style.setProperty('--fc-12h-font-size', `${value}${unit}`);
       }
