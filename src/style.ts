@@ -68,6 +68,27 @@ export const style = html`
       cursor: pointer;
     }
 
+    .fc-format-toggle {
+      position: absolute;
+      left: 0.7em;
+      bottom: 0.7em;
+      z-index: 11;
+      width: 2.4em;
+      height: 2.4em;
+      border-radius: 50%;
+      background: rgba(20, 22, 26, 0.85);
+      color: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+      cursor: pointer;
+    }
+
+    .fc-format-toggle ha-icon {
+      --mdc-icon-size: 1.3em;
+    }
+
     .fc-notif-fab ha-icon {
       --mdc-icon-size: 1.3em;
     }
@@ -284,18 +305,22 @@ export const style = html`
       transform: translateY(-100%);
     }
     .flip-clock .flip-clock-group .flip-clock-label.flip-clock-meridium {
-      font-size: 1.75em;
-      line-height: 1.75em;
-      top: 50%;
-      left: 100%;
+      font-size: 0.55em;
+      line-height: 1;
+      top: auto;
+      bottom: 0.25em;
+      left: auto;
+      right: 0.3em;
       flex: 0;
       width: auto;
       text-transform: uppercase;
-      font-weight: 200;
-      transform: translate(0.5em, -50%);
+      font-weight: 700;
+      text-align: right;
+      transform: none;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
     }
     .flip-clock .flip-clock-group .flip-clock-list {
-      width: 4.5em;
+      width: 4.7em;
       height: 8.4em;
       position: relative;
       border-radius: 0.75rem;

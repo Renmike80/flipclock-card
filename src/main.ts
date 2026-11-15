@@ -28,6 +28,7 @@ export class FlipClockCard extends LitElement {
   private _unreadCount = 0;
   private _notifListOpen = false;
   private _bannerHideTimeout: ReturnType<typeof setTimeout> | null = null;
+  private _effectiveFace!: string;
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
@@ -84,6 +85,48 @@ export class FlipClockCard extends LitElement {
         title: typeof item == 'string' ? item : (item as Timezone).title,
       });
     });
+
+    if (!this._effectiveFace) {
+      const saved = this.getSavedFace();
+      this._effectiveFace = saved && this._clockFaces.includes(saved) ? saved : this._config.time.face;
+    }
+  }
+
+  private getSavedFace(): string | null {
+    try {
+      return localStorage.getItem('flipclock-card-time-format');
+    } catch (e) {
+      return null;
+    }
+  }
+
+  private saveFace(face: string): void {
+    try {
+      localStorage.setItem('flipclock-card-time-format', face);
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  private toggleTimeFormat(): void {
+    this._effectiveFace = this._effectiveFace === 'TwelveHourClock' ? 'TwentyFourHourClock' : 'TwelveHourClock';
+    this.saveFace(this._effectiveFace);
+    this.rebuildClock();
+  }
+
+  private rebuildClock(): void {
+    const container = this.shadowRoot?.querySelector('.fc-time');
+    if (!container) return;
+    container.innerHTML = '';
+    if (this._clockFaces.includes(this._effectiveFace)) {
+      const el = document.createElement('div');
+      el.className = 'fc-now';
+      new FlipClock(el, this._date, {
+        face: this._effectiveFace,
+        showSeconds: this._config.time.showSeconds,
+      });
+      container.appendChild(el);
+    }
   }
 
   protected shouldUpdate(): boolean {
@@ -93,6 +136,7 @@ export class FlipClockCard extends LitElement {
   protected firstUpdated(): void {
     this._firstUpdated = true;
     this.shadowRoot?.getElementById('fc_notif_fab')?.addEventListener('click', () => this.toggleNotificationList());
+    this.shadowRoot?.getElementById('fc_format_toggle')?.addEventListener('click', () => this.toggleTimeFormat());
   }
 
   protected render(): TemplateResult | void {
@@ -110,6 +154,9 @@ export class FlipClockCard extends LitElement {
           <span class="fc-notif-badge" id="fc_notif_badge"></span>
         </div>
         <div class="fc-notif-list" id="fc_notif_list"></div>
+        <div class="fc-format-toggle" id="fc_format_toggle">
+          <ha-icon icon="mdi:clock-time-four-outline"></ha-icon>
+        </div>
         <div class="fc-content">
           ${this.showValue(this._config.title)
             ? html`
@@ -137,11 +184,11 @@ export class FlipClockCard extends LitElement {
   }
 
   private renderClock(): TemplateResult {
-    if (this._clockFaces.includes(this._config.time.face)) {
+    if (this._clockFaces.includes(this._effectiveFace)) {
       const el = document.createElement('div');
       el.className = 'fc-now';
       new FlipClock(el, this._date, {
-        face: this._config.time.face,
+        face: this._effectiveFace,
         showSeconds: this._config.time.showSeconds,
       });
 
@@ -152,8 +199,7 @@ export class FlipClockCard extends LitElement {
 
   private renderDate(): TemplateResult {
     if (this._config.date.hidden) return html``;
-    const showMeridiemHere =
-      this._config.time.meridiemPosition === 'bottom' && this._config.time.face === 'TwelveHourClock';
+    const showMeridiemHere = this._config.time.meridiemPosition === 'bottom' && this._effectiveFace === 'TwelveHourClock';
     return html` <div class="fc-date">
       ${showMeridiemHere
         ? html`<span class="fc-meridiem-bottom" id="fc_meridiem_bottom">${this.formatMeridiem(this._date)}</span>`
