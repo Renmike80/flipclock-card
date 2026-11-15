@@ -306,7 +306,7 @@ var Jn=Object.create;var Ae=Object.defineProperty;var ct=Object.getOwnPropertyDe
     .flip-clock .flip-clock-divider {
       position: relative;
       width: 1.5em;
-      height: 6em;
+      height: 6.6em;
     }
     .flip-clock .flip-clock-divider:before,
     .flip-clock .flip-clock-divider:after {
