@@ -51,6 +51,111 @@ export const style = html`
       white-space: nowrap;
     }
 
+    .fc-notif-fab {
+      position: absolute;
+      right: 0.7em;
+      bottom: 0.7em;
+      z-index: 11;
+      width: 2.4em;
+      height: 2.4em;
+      border-radius: 50%;
+      background: rgba(20, 22, 26, 0.85);
+      color: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+      cursor: pointer;
+    }
+
+    .fc-notif-fab ha-icon {
+      --mdc-icon-size: 1.3em;
+    }
+
+    .fc-notif-badge {
+      position: absolute;
+      top: -0.2em;
+      right: -0.2em;
+      min-width: 1.3em;
+      height: 1.3em;
+      padding: 0 0.2em;
+      border-radius: 1em;
+      background: #e04b4b;
+      color: #fff;
+      font-size: 0.65em;
+      font-weight: 700;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fc-notif-badge.visible {
+      display: flex;
+    }
+
+    .fc-notif-list {
+      position: absolute;
+      right: 0.7em;
+      bottom: 3.4em;
+      z-index: 11;
+      width: min(16em, 70%);
+      max-height: 50%;
+      overflow-y: auto;
+      background: rgba(20, 22, 26, 0.95);
+      color: #f0f0f0;
+      border-radius: 0.6em;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+      padding: 0;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(0.5em);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .fc-notif-list.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .fc-notif-item {
+      padding: 0.6em 0.8em;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.8em;
+    }
+
+    .fc-notif-item:last-child {
+      border-bottom: none;
+    }
+
+    .fc-notif-item-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5em;
+    }
+
+    .fc-notif-item-title {
+      font-weight: 700;
+    }
+
+    .fc-notif-item-time {
+      opacity: 0.6;
+      white-space: nowrap;
+    }
+
+    .fc-notif-item-message {
+      margin-top: 0.2em;
+      opacity: 0.85;
+      font-weight: 300;
+    }
+
+    .fc-notif-empty {
+      padding: 0.8em;
+      font-size: 0.8em;
+      opacity: 0.7;
+      text-align: center;
+    }
+
     .fc-content {
       display: grid;
       width: 100%;
@@ -190,7 +295,7 @@ export const style = html`
       transform: translate(0.5em, -50%);
     }
     .flip-clock .flip-clock-group .flip-clock-list {
-      width: 4.2em;
+      width: 4.5em;
       height: 8.4em;
       position: relative;
       border-radius: 0.75rem;

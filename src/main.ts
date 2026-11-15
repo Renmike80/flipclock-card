@@ -23,6 +23,11 @@ export class FlipClockCard extends LitElement {
   private _timezones!: Timezone[];
   private _clockFaces: string[] = ['TwentyFourHourClock', 'TwelveHourClock'];
   private _firstUpdated = false;
+  private _notificationHistory: { title: string; message: string; time: number }[] = [];
+  private _lastNotificationChanged: string | null = null;
+  private _unreadCount = 0;
+  private _notifListOpen = false;
+  private _bannerHideTimeout: ReturnType<typeof setTimeout> | null = null;
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
@@ -87,6 +92,7 @@ export class FlipClockCard extends LitElement {
 
   protected firstUpdated(): void {
     this._firstUpdated = true;
+    this.shadowRoot?.getElementById('fc_notif_fab')?.addEventListener('click', () => this.toggleNotificationList());
   }
 
   protected render(): TemplateResult | void {
@@ -99,6 +105,11 @@ export class FlipClockCard extends LitElement {
           <span class="fc-notification-title" id="fc_notification_title"></span>
           <span class="fc-notification-message" id="fc_notification_message"></span>
         </div>
+        <div class="fc-notif-fab" id="fc_notif_fab">
+          <ha-icon icon="mdi:bell-outline"></ha-icon>
+          <span class="fc-notif-badge" id="fc_notif_badge"></span>
+        </div>
+        <div class="fc-notif-list" id="fc_notif_list"></div>
         <div class="fc-content">
           ${this.showValue(this._config.title)
             ? html`
@@ -172,19 +183,84 @@ export class FlipClockCard extends LitElement {
 
   private updateNotificationBanner(): void {
     if (!this._hass) return;
-    const bannerEl = this.shadowRoot?.getElementById('fc_notification');
-    if (!bannerEl) return;
-    const timer = this._hass.states['timer.dashboard_notification_clear'];
     const title = this._hass.states['input_text.dashboard_last_notification_title'];
     const message = this._hass.states['input_text.dashboard_last_notification_message'];
-    const active = timer?.state === 'active' && !!title?.state;
-    bannerEl.classList.toggle('visible', active);
-    if (active) {
-      const titleEl = this.shadowRoot?.getElementById('fc_notification_title');
-      const messageEl = this.shadowRoot?.getElementById('fc_notification_message');
-      if (titleEl) titleEl.textContent = title.state;
-      if (messageEl) messageEl.textContent = message?.state || '';
+    if (!title || !title.state) return;
+
+    const changedAt = (title as unknown as { last_changed: string }).last_changed;
+    const isNew = changedAt && changedAt !== this._lastNotificationChanged;
+    if (!isNew) return;
+    this._lastNotificationChanged = changedAt;
+
+    this._notificationHistory.unshift({ title: title.state, message: message?.state || '', time: Date.now() });
+    this._notificationHistory = this._notificationHistory.slice(0, 20);
+
+    if (!this._notifListOpen) {
+      this._unreadCount++;
+      this.updateNotifBadge();
+    } else {
+      this.renderNotifList();
     }
+
+    const bannerEl = this.shadowRoot?.getElementById('fc_notification');
+    const titleEl = this.shadowRoot?.getElementById('fc_notification_title');
+    const messageEl = this.shadowRoot?.getElementById('fc_notification_message');
+    if (titleEl) titleEl.textContent = title.state;
+    if (messageEl) messageEl.textContent = message?.state || '';
+    bannerEl?.classList.add('visible');
+
+    if (this._bannerHideTimeout) clearTimeout(this._bannerHideTimeout);
+    this._bannerHideTimeout = setTimeout(() => {
+      bannerEl?.classList.remove('visible');
+    }, 6000);
+  }
+
+  private updateNotifBadge(): void {
+    const badgeEl = this.shadowRoot?.getElementById('fc_notif_badge');
+    if (!badgeEl) return;
+    if (this._unreadCount > 0) {
+      badgeEl.textContent = this._unreadCount > 9 ? '9+' : String(this._unreadCount);
+      badgeEl.classList.add('visible');
+    } else {
+      badgeEl.classList.remove('visible');
+    }
+  }
+
+  private toggleNotificationList(): void {
+    this._notifListOpen = !this._notifListOpen;
+    const listEl = this.shadowRoot?.getElementById('fc_notif_list');
+    listEl?.classList.toggle('open', this._notifListOpen);
+    if (this._notifListOpen) {
+      this._unreadCount = 0;
+      this.updateNotifBadge();
+      this.renderNotifList();
+    }
+  }
+
+  private renderNotifList(): void {
+    const listEl = this.shadowRoot?.getElementById('fc_notif_list');
+    if (!listEl) return;
+    if (this._notificationHistory.length === 0) {
+      listEl.innerHTML = '<div class="fc-notif-empty">No notifications yet</div>';
+      return;
+    }
+    listEl.innerHTML = this._notificationHistory
+      .map((n) => {
+        const time = new Date(n.time).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        const title = this.escapeHtml(n.title);
+        const message = this.escapeHtml(n.message);
+        return `<div class="fc-notif-item">
+          <div class="fc-notif-item-row"><span class="fc-notif-item-title">${title}</span><span class="fc-notif-item-time">${time}</span></div>
+          ${message ? `<div class="fc-notif-item-message">${message}</div>` : ''}
+        </div>`;
+      })
+      .join('');
+  }
+
+  private escapeHtml(str: string): string {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
   }
 
   private formatTimezone(tzId: string): string {
