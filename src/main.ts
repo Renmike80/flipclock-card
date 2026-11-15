@@ -140,10 +140,10 @@ export class FlipClockCard extends LitElement {
       if (match) {
         const value = parseFloat(match[1]) * 0.96;
         const unit = match[2] || 'px';
-        requestAnimationFrame(() => {
+        setTimeout(() => {
           const flipClockEl = el.querySelector('.flip-clock') as HTMLElement | null;
           if (flipClockEl) flipClockEl.style.fontSize = `${value}${unit}`;
-        });
+        }, 0);
       }
     }
 
