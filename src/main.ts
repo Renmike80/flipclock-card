@@ -29,6 +29,7 @@ export class FlipClockCard extends LitElement {
     this._date = new Date();
 
     setInterval(this.updateTimezones.bind(this), 500);
+    setInterval(this.updateMeridiemBottom.bind(this), 500);
   }
 
   public setConfig(config: FlipClockCardConfig): void {
@@ -45,6 +46,8 @@ export class FlipClockCard extends LitElement {
           meridiemFontSize: null,
           meridiemFontFamily: null,
           meridiemOffset: null,
+          meridiemColor: null,
+          meridiemPosition: 'inline',
           cardSize: null,
         },
         timezones: [],
@@ -59,6 +62,10 @@ export class FlipClockCard extends LitElement {
           locale: null,
           fontSize: null,
           fontFamily: null,
+          color: null,
+        },
+        background: {
+          type: null,
         },
       },
       config,
@@ -128,17 +135,34 @@ export class FlipClockCard extends LitElement {
   }
 
   private renderDate(): TemplateResult {
-    if (!this._config.date.hidden)
-      return html` <div class="fc-date">
-        ${this.formatDate(this._date)}
-      </div>`;
-    else return html``;
+    if (this._config.date.hidden) return html``;
+    const showMeridiemHere =
+      this._config.time.meridiemPosition === 'bottom' && this._config.time.face === 'TwelveHourClock';
+    return html` <div class="fc-date">
+      <span class="fc-date-text">${this.formatDate(this._date)}</span>
+      ${showMeridiemHere
+        ? html`<span class="fc-meridiem-bottom" id="fc_meridiem_bottom">${this.formatMeridiem(this._date)}</span>`
+        : ''}
+    </div>`;
   }
 
   private formatDate(date: Date, options?: Intl.DateTimeFormatOptions): string {
     const l = this._config.date.locale || this._hass?.language;
     const o = options || this._config.date.format;
     return date.toLocaleDateString(l, o);
+  }
+
+  private formatMeridiem(date: Date): string {
+    const l = this._config.date.locale || this._hass?.language;
+    const parts = new Intl.DateTimeFormat(l, { hour: 'numeric', hour12: true }).formatToParts(date);
+    const part = parts.find((p) => p.type === 'dayPeriod');
+    return part ? part.value : '';
+  }
+
+  private updateMeridiemBottom(): void {
+    if (this._config?.time?.meridiemPosition !== 'bottom') return;
+    const el = this.shadowRoot?.getElementById('fc_meridiem_bottom');
+    if (el) el.innerHTML = this.formatMeridiem(new Date());
   }
 
   private formatTimezone(tzId: string): string {

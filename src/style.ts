@@ -47,6 +47,17 @@ export const style = html`
 
     .fc-date {
       text-align: center;
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 0.5em;
+    }
+
+    .fc-meridiem-bottom {
+      font-size: 0.8em;
+      font-weight: 200;
+      text-transform: uppercase;
+      opacity: 0.8;
     }
 
     .fc-time {
@@ -367,6 +378,18 @@ export const style = html`
         opacity: 0;
       }
     }
+
+    @keyframes fc-bg-shift {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
   </style>
 `;
 
@@ -374,33 +397,93 @@ export const style = html`
 // base stylesheet above hardcodes both. Rendered as a second <style> tag
 // after the base one, so these rules win the cascade (same specificity,
 // later source order) only for the properties actually set in config.
+// Named gradient presets for `background.preset`. Each is a 4-stop
+// palette used with a 45deg diagonal gradient, animated via fc-bg-shift
+// when `background.animate` is true (the default for presets).
+const BACKGROUND_PRESETS: Record<string, string[]> = {
+  aurora: ['#0f2027', '#2c5364', '#00c6a7', '#2c5364'],
+  sunset: ['#355c7d', '#6c5b7b', '#c06c84', '#f67280'],
+  ocean: ['#1e3c72', '#2193b0', '#6dd5ed', '#2193b0'],
+  midnight: ['#000000', '#0f0c29', '#302b63', '#24243e'],
+};
+
+function buildBackgroundCss(config: FlipClockCardConfig): string {
+  const bg = config?.background;
+  if (!bg || !bg.type) return '';
+
+  if (bg.type === 'solid' && bg.color) {
+    return `ha-card { background: ${bg.color}; }`;
+  }
+
+  let colors: string[] | undefined;
+  if (bg.type === 'gradient' && bg.colors && bg.colors.length >= 2) {
+    colors = bg.colors;
+  } else if (bg.type === 'preset' && bg.preset) {
+    colors = BACKGROUND_PRESETS[bg.preset];
+  }
+  if (!colors) return '';
+
+  const direction = bg.direction || '45deg';
+  const gradient = `linear-gradient(${direction}, ${colors.join(', ')})`;
+  // Preset gradients animate by default (that's the point of a "preset");
+  // custom gradients only animate if explicitly requested.
+  const shouldAnimate = bg.animate !== undefined ? bg.animate : bg.type === 'preset';
+
+  if (!shouldAnimate) {
+    return `ha-card { background: ${gradient}; }`;
+  }
+  const duration = bg.animationDuration || '18s';
+  return `
+    ha-card {
+      background: ${gradient};
+      background-size: 400% 400%;
+      animation: fc-bg-shift ${duration} ease infinite;
+    }
+  `;
+}
+
 export function customStyles(config: FlipClockCardConfig): TemplateResult {
   const dateFontSize = config?.date?.fontSize;
   const dateFontFamily = config?.date?.fontFamily;
+  const dateColor = config?.date?.color;
   const meridiemFontSize = config?.time?.meridiemFontSize;
   const meridiemFontFamily = config?.time?.meridiemFontFamily;
   const meridiemOffset = config?.time?.meridiemOffset;
+  const meridiemColor = config?.time?.meridiemColor;
+  const meridiemBottom = config?.time?.meridiemPosition === 'bottom';
   const cardSize = config?.time?.cardSize;
 
   const css = [
     dateFontSize ? `.fc-date { font-size: ${dateFontSize}; }` : '',
     dateFontFamily ? `.fc-date { font-family: ${dateFontFamily}; }` : '',
+    dateColor ? `.fc-date { color: ${dateColor}; }` : '',
     // .flip-clock's font-size is the base unit every card dimension (width,
     // height, digit font-size, divider size) is defined in em relative to,
     // so overriding it alone scales the whole clock proportionally.
     cardSize ? `.flip-clock { font-size: ${cardSize}; }` : '',
-    meridiemFontSize
+    // When the AM/PM label moves next to the date, hide the one FlipClock
+    // renders inline next to the last digit instead of styling it.
+    meridiemBottom
+      ? `.flip-clock .flip-clock-group .flip-clock-label.flip-clock-meridium { display: none; }`
+      : '',
+    meridiemFontSize && !meridiemBottom
       ? `.flip-clock .flip-clock-group .flip-clock-label.flip-clock-meridium { font-size: ${meridiemFontSize}; }`
       : '',
     meridiemFontFamily
-      ? `.flip-clock .flip-clock-group .flip-clock-label.flip-clock-meridium { font-family: ${meridiemFontFamily}; }`
+      ? `.flip-clock .flip-clock-group .flip-clock-label.flip-clock-meridium { font-family: ${meridiemFontFamily}; }
+         .fc-meridiem-bottom { font-family: ${meridiemFontFamily}; }`
       : '',
     // Base stylesheet uses translate(0.5em, -50%) to push the label away
     // from the last digit group. Only the horizontal (first) value is
     // meant to be adjustable here; vertical centering stays at -50%.
-    meridiemOffset
+    meridiemOffset && !meridiemBottom
       ? `.flip-clock .flip-clock-group .flip-clock-label.flip-clock-meridium { transform: translate(${meridiemOffset}, -50%); }`
       : '',
+    meridiemColor
+      ? `.flip-clock .flip-clock-group .flip-clock-label.flip-clock-meridium { color: ${meridiemColor}; }
+         .fc-meridiem-bottom { color: ${meridiemColor}; }`
+      : '',
+    buildBackgroundCss(config),
   ]
     .filter(Boolean)
     .join('\n');
