@@ -312,7 +312,7 @@ var Jn=Object.create;var Ae=Object.defineProperty;var ct=Object.getOwnPropertyDe
       top: auto;
       bottom: 0.3em;
       left: auto;
-      right: 0.35em;
+      right: 0.5em;
       flex: 0;
       width: 1.8em;
       overflow: visible;
