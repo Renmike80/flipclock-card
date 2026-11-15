@@ -305,6 +305,7 @@ export const style = html`
       transform: translateY(-100%);
     }
     .flip-clock .flip-clock-group .flip-clock-label.flip-clock-meridium {
+      position: absolute;
       font-size: 0.55em;
       line-height: 1;
       top: auto;
@@ -312,7 +313,8 @@ export const style = html`
       left: auto;
       right: 0.3em;
       flex: 0;
-      width: auto;
+      width: 0;
+      overflow: visible;
       text-transform: uppercase;
       font-weight: 700;
       text-align: right;
