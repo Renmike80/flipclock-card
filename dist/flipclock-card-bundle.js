@@ -310,11 +310,11 @@ var Jn=Object.create;var Ae=Object.defineProperty;var ct=Object.getOwnPropertyDe
       font-size: 0.55em;
       line-height: 1;
       top: auto;
-      bottom: 0.25em;
+      bottom: 0.3em;
       left: auto;
-      right: 0.3em;
+      right: 0.35em;
       flex: 0;
-      width: 0;
+      width: 1.8em;
       overflow: visible;
       text-transform: uppercase;
       font-weight: 700;
