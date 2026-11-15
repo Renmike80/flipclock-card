@@ -150,8 +150,8 @@ var Jn=Object.create;var Ae=Object.defineProperty;var ct=Object.getOwnPropertyDe
       transform: translate(0.5em, -50%);
     }
     .flip-clock .flip-clock-group .flip-clock-list {
-      width: 4em;
-      height: 6em;
+      width: 4.3em;
+      height: 6.6em;
       position: relative;
       border-radius: 0.75rem;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 6px 14px rgba(0, 0, 0, 0.3);
@@ -257,7 +257,7 @@ var Jn=Object.create;var Ae=Object.defineProperty;var ct=Object.getOwnPropertyDe
       height: 50%;
       overflow: hidden;
       position: relative;
-      font-size: 4.5em;
+      font-size: 5em;
       background: #333;
       box-shadow: inset 0 0 0.2em rgba(0, 0, 0, 0.5);
     }
