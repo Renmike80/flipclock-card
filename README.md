@@ -93,6 +93,32 @@ This card is available in [HACS](https://github.com/custom-components/hacs/issue
 TwentyFourHourClock - displays a 24 hour clock (default)<br/>
 TwelveHourClock - displays a 12 hour clock
 
+#### Background options
+| Name | Type | Default | Description |
+|------|----|-------|-------------|
+| type | string |  | `solid`, `gradient`, `preset`, or `dark-outline`. Omit `background` entirely for the card's default look.
+| color | string |  | Used by `type: solid` (the fill color) and `type: dark-outline` (the shared near-black/background shade, defaults to `#0a0a0a`).
+| colors | string[] |  | Used by `type: gradient`, 2+ colors for a custom `linear-gradient`.
+| direction | string | 45deg | Used by `type: gradient`, the CSS gradient angle.
+| preset | string |  | Used by `type: preset`: `aurora`, `sunset`, `ocean`, or `midnight`.
+| animate | boolean |  | Whether a gradient/preset background slowly shifts. Defaults to `true` for presets, `false` for custom gradients.
+| animationDuration | string | 18s | Animation cycle length when `animate` is on.
+
+To switch the Mi Smart Clock dashboard between the two themes we've used, edit the `background:` block in the dashboard's Raw configuration editor (comments typed there don't survive saving, since Home Assistant stores dashboards as structured data — this README is the place to keep notes like this one):
+
+```yaml
+# Slate-gray (default so far)
+background:
+  type: solid
+  color: '#5c626b'
+```
+
+```yaml
+# Dark/black outline — near-black background and cards, white card/icon borders
+background:
+  type: dark-outline
+```
+
 ### Minimal example
 Shows the time (24 hour clock) without seconds and the date. The default locale for the date is set to your HASS system language.
 ```yaml
