@@ -587,11 +587,12 @@ function buildBackgroundCss(config: FlipClockCardConfig): string {
 
   if (bg.type === 'dark-outline') {
     const shade = bg.color || '#0a0a0a';
+    const outline = 'rgba(255, 255, 255, 0.35)';
     return `
       ha-card { background: ${shade}; }
       .flip-clock .flip-clock-group .flip-clock-list {
         box-sizing: border-box;
-        border: 2px solid #fff;
+        border: 1px solid ${outline};
       }
       .flip-clock .flip-clock-group .flip-clock-list .flip-clock-list-item-inner > .top,
       .flip-clock .flip-clock-group .flip-clock-list .flip-clock-list-item-inner > .bottom,
@@ -600,16 +601,16 @@ function buildBackgroundCss(config: FlipClockCardConfig): string {
       }
       .flip-clock .flip-clock-divider:before,
       .flip-clock .flip-clock-divider:after {
-        background: #fff;
+        background: ${outline};
       }
       .fc-notif-fab,
       .fc-format-toggle {
         box-sizing: border-box;
-        border: 2px solid #fff;
+        border: 1px solid ${outline};
         background: ${shade};
       }
       .fc-notification {
-        border-bottom: 2px solid #fff;
+        border-bottom: 1px solid ${outline};
       }
     `;
   }
