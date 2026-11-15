@@ -4,7 +4,7 @@ import FlipClock from 'FlipClock';
 import { HomeAssistant } from 'custom-card-helpers';
 
 import { FlipClockCardConfig, Timezone } from './types';
-import { style } from './style';
+import { style, customStyles } from './style';
 import { mergeDeep } from './helpers';
 
 import * as pjson from '../package.json';
@@ -42,6 +42,8 @@ export class FlipClockCard extends LitElement {
         time: {
           face: 'TwentyFourHourClock',
           showSeconds: false,
+          meridiemFontSize: null,
+          meridiemFontFamily: null,
         },
         timezones: [],
         date: {
@@ -53,6 +55,8 @@ export class FlipClockCard extends LitElement {
           },
           hidden: false,
           locale: null,
+          fontSize: null,
+          fontFamily: null,
         },
       },
       config,
@@ -95,7 +99,7 @@ export class FlipClockCard extends LitElement {
           ${this.renderDate()} ${this.renderTimezones()}
         </div>
       </ha-card>
-      ${style}
+      ${style} ${customStyles(this._config)}
     `;
   }
 

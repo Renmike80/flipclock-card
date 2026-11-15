@@ -1,4 +1,5 @@
-import { html } from 'lit-element';
+import { html, TemplateResult } from 'lit-element';
+import { FlipClockCardConfig } from './types';
 
 export const style = html`
   <style>
@@ -354,5 +355,31 @@ export const style = html`
     }
   </style>
 `;
+
+// Per-config overrides for the date text and the AM/PM label, since the
+// base stylesheet above hardcodes both. Rendered as a second <style> tag
+// after the base one, so these rules win the cascade (same specificity,
+// later source order) only for the properties actually set in config.
+export function customStyles(config: FlipClockCardConfig): TemplateResult {
+  const dateFontSize = config?.date?.fontSize;
+  const dateFontFamily = config?.date?.fontFamily;
+  const meridiemFontSize = config?.time?.meridiemFontSize;
+  const meridiemFontFamily = config?.time?.meridiemFontFamily;
+
+  const css = [
+    dateFontSize ? `.fc-date { font-size: ${dateFontSize}; }` : '',
+    dateFontFamily ? `.fc-date { font-family: ${dateFontFamily}; }` : '',
+    meridiemFontSize
+      ? `.flip-clock .flip-clock-group .flip-clock-label.flip-clock-meridium { font-size: ${meridiemFontSize}; }`
+      : '',
+    meridiemFontFamily
+      ? `.flip-clock .flip-clock-group .flip-clock-label.flip-clock-meridium { font-family: ${meridiemFontFamily}; }`
+      : '',
+  ]
+    .filter(Boolean)
+    .join('\n');
+
+  return html`<style>${css}</style>`;
+}
 
 export default style;

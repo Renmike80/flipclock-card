@@ -8,12 +8,16 @@ export interface FlipClockCardConfig {
 export interface TimeOptions {
   face: string;
   showSeconds: boolean;
+  meridiemFontSize?: string;
+  meridiemFontFamily?: string;
 }
 
 export interface DateOptions {
   format: Intl.DateTimeFormatOptions;
   hidden: boolean;
   locale: string;
+  fontSize?: string;
+  fontFamily?: string;
 }
 
 export interface Timezone {
