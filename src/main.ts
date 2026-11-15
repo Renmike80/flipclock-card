@@ -118,15 +118,34 @@ export class FlipClockCard extends LitElement {
     const container = this.shadowRoot?.querySelector('.fc-time');
     if (!container) return;
     container.innerHTML = '';
-    if (this._clockFaces.includes(this._effectiveFace)) {
-      const el = document.createElement('div');
-      el.className = 'fc-now';
-      new FlipClock(el, this._date, {
-        face: this._effectiveFace,
-        showSeconds: this._config.time.showSeconds,
-      });
-      container.appendChild(el);
+    const el = this.createClockElement();
+    if (el) container.appendChild(el);
+  }
+
+  private createClockElement(): HTMLElement | null {
+    if (!this._clockFaces.includes(this._effectiveFace)) return null;
+    const el = document.createElement('div');
+    el.className = 'fc-now';
+    new FlipClock(el, this._date, {
+      face: this._effectiveFace,
+      showSeconds: this._config.time.showSeconds,
+    });
+
+    // The AM/PM label (12-hour face only) renders as an absolutely-positioned
+    // child of the minutes group, but still nudges that group's flex-measured
+    // width slightly wider in some browser engines. Shrink the clock a touch
+    // in 12-hour mode so the total row still fits without wrapping.
+    if (this._effectiveFace === 'TwelveHourClock' && this._config.time.cardSize) {
+      const match = String(this._config.time.cardSize).match(/^([\d.]+)(\D*)$/);
+      if (match) {
+        const value = parseFloat(match[1]) * 0.96;
+        const unit = match[2] || 'px';
+        const flipClockEl = el.querySelector('.flip-clock') as HTMLElement | null;
+        if (flipClockEl) flipClockEl.style.fontSize = `${value}${unit}`;
+      }
     }
+
+    return el;
   }
 
   protected shouldUpdate(): boolean {
@@ -184,17 +203,8 @@ export class FlipClockCard extends LitElement {
   }
 
   private renderClock(): TemplateResult {
-    if (this._clockFaces.includes(this._effectiveFace)) {
-      const el = document.createElement('div');
-      el.className = 'fc-now';
-      new FlipClock(el, this._date, {
-        face: this._effectiveFace,
-        showSeconds: this._config.time.showSeconds,
-      });
-
-      return html`${el}`;
-    }
-    return html``;
+    const el = this.createClockElement();
+    return el ? html`${el}` : html``;
   }
 
   private renderDate(): TemplateResult {
