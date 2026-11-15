@@ -308,7 +308,7 @@ var Jn=Object.create;var Ae=Object.defineProperty;var ct=Object.getOwnPropertyDe
     .flip-clock .flip-clock-group .flip-clock-label.flip-clock-meridium {
       position: absolute;
       z-index: 10;
-      font-size: 0.55em;
+      font-size: 0.7em;
       line-height: 1;
       top: auto;
       bottom: 0.3em;
@@ -321,6 +321,7 @@ var Jn=Object.create;var Ae=Object.defineProperty;var ct=Object.getOwnPropertyDe
       font-weight: 700;
       text-align: right;
       transform: none;
+      color: #ccc;
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
     }
     .flip-clock .flip-clock-group .flip-clock-list {
