@@ -107,16 +107,17 @@ TwelveHourClock - displays a 12 hour clock
 To switch the Mi Smart Clock dashboard between the two themes we've used, edit the `background:` block in the dashboard's Raw configuration editor (comments typed there don't survive saving, since Home Assistant stores dashboards as structured data — this README is the place to keep notes like this one):
 
 ```yaml
-# Slate-gray (default so far)
+# Dark/black outline (current default) — near-black background and cards,
+# thin semi-transparent white card/icon borders
 background:
-  type: solid
-  color: '#5c626b'
+  type: dark-outline
 ```
 
 ```yaml
-# Dark/black outline — near-black background and cards, white card/icon borders
+# Slate-gray (alternate)
 background:
-  type: dark-outline
+  type: solid
+  color: '#5c626b'
 ```
 
 ### Minimal example
