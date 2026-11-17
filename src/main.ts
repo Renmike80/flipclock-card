@@ -29,14 +29,38 @@ export class FlipClockCard extends LitElement {
   private _notifListOpen = false;
   private _bannerHideTimeout: ReturnType<typeof setTimeout> | null = null;
   private _effectiveFace!: string;
+  private _intervalsStarted = false;
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
     this._date = new Date();
 
-    setInterval(this.updateTimezones.bind(this), 500);
-    setInterval(this.updateMeridiemBottom.bind(this), 500);
-    setInterval(this.updateNotificationBanner.bind(this), 500);
+    // `hass` is re-assigned on every Home Assistant state update — often many
+    // times a minute — so these must only be registered once. Previously
+    // this ran on every assignment, silently accumulating hundreds of
+    // duplicate intervals over hours of uptime and congesting the main
+    // thread, which is almost certainly what caused the on-screen clock to
+    // gradually drift behind real time until the page was manually reloaded.
+    if (!this._intervalsStarted) {
+      this._intervalsStarted = true;
+      setInterval(this.updateTimezones.bind(this), 500);
+      setInterval(this.updateMeridiemBottom.bind(this), 500);
+      setInterval(this.updateNotificationBanner.bind(this), 500);
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') this.resyncClock();
+      });
+    }
+  }
+
+  // Forces the flip-clock back in sync with the real current time. Belt-
+  // and-suspenders alongside the interval-leak fix above: if the tab was
+  // ever hidden/backgrounded for a stretch (which can still throttle
+  // requestAnimationFrame-driven timers even after the leak fix), this
+  // guarantees an immediate correction the moment it becomes visible again,
+  // rather than waiting on a manual reload.
+  private resyncClock(): void {
+    this._date = new Date();
+    this.rebuildClock();
   }
 
   public setConfig(config: FlipClockCardConfig): void {
