@@ -4,6 +4,17 @@ export interface FlipClockCardConfig {
   timezones: string[] | Timezone[];
   date: DateOptions;
   background?: BackgroundOptions;
+  nightDim?: NightDimOptions;
+}
+
+export interface NightDimOptions {
+  // Hours are local 24-hour clock, 0-23. Default: dim from 23 to 6.
+  // Wraps past midnight automatically when start > end.
+  enabled?: boolean;
+  startHour?: number;
+  endHour?: number;
+  // 0-1, how dark the dimmed card gets. Default 0.25.
+  brightness?: number;
 }
 
 export interface TimeOptions {

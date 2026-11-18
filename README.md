@@ -104,6 +104,23 @@ TwelveHourClock - displays a 12 hour clock
 | animate | boolean |  | Whether a gradient/preset background slowly shifts. Defaults to `true` for presets, `false` for custom gradients.
 | animationDuration | string | 18s | Animation cycle length when `animate` is on.
 
+#### Night dimming
+| Name | Type | Default | Description |
+|------|----|-------|-------------|
+| enabled | boolean | true | Dims the card automatically during the configured hours (no ambient light sensor needed — this is a fixed local-time schedule).
+| startHour | number | 23 | Local 24-hour clock hour dimming begins.
+| endHour | number | 6 | Local 24-hour clock hour dimming ends. If `startHour` > `endHour`, the window wraps past midnight.
+| brightness | number | 0.25 | CSS `brightness()` filter value applied while dimmed (0-1).
+
+```yaml
+# Default: dim 11pm-6am. Omit `nightDim` entirely to use these same defaults.
+nightDim:
+  enabled: true
+  startHour: 23
+  endHour: 6
+  brightness: 0.25
+```
+
 To switch the Mi Smart Clock dashboard between the two themes we've used, edit the `background:` block in the dashboard's Raw configuration editor (comments typed there don't survive saving, since Home Assistant stores dashboards as structured data — this README is the place to keep notes like this one):
 
 ```yaml

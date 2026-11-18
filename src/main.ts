@@ -59,6 +59,8 @@ export class FlipClockCard extends LitElement {
       // resyncing on a short fixed interval caps how far it can ever drift,
       // independent of whatever the actual underlying cause is.
       setInterval(this.resyncClock.bind(this), 30000);
+      setInterval(this.updateNightDim.bind(this), 30000);
+      this.updateNightDim();
     }
   }
 
@@ -66,6 +68,26 @@ export class FlipClockCard extends LitElement {
   private resyncClock(): void {
     this._date = new Date();
     this.rebuildClock();
+  }
+
+  // Dims the card via a CSS filter during the configured night hours. No
+  // ambient-light sensor is usable here (present in hardware, but this
+  // GSI's AutomaticBrightnessController never attaches a listener to it —
+  // confirmed via `dumpsys sensorservice` showing 0 active connections even
+  // with auto-brightness enabled), so this is a fixed local-time schedule
+  // instead. Toggling a class (rather than inline style) lets the `transition`
+  // on ha-card animate it smoothly instead of snapping instantly.
+  private updateNightDim(): void {
+    if (!this._config?.nightDim?.enabled) return;
+    const card = this.shadowRoot?.querySelector('ha-card');
+    if (!card) return;
+
+    const hour = new Date().getHours();
+    const start = this._config.nightDim.startHour ?? 23;
+    const end = this._config.nightDim.endHour ?? 6;
+    const isDimPeriod = start > end ? hour >= start || hour < end : hour >= start && hour < end;
+
+    card.classList.toggle('fc-night-dim', isDimPeriod);
   }
 
   public setConfig(config: FlipClockCardConfig): void {
@@ -102,6 +124,12 @@ export class FlipClockCard extends LitElement {
         },
         background: {
           type: null,
+        },
+        nightDim: {
+          enabled: true,
+          startHour: 23,
+          endHour: 6,
+          brightness: 0.25,
         },
       },
       config,

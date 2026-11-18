@@ -14,6 +14,11 @@ export const style = html`
       flex-direction: column;
       position: relative;
       overflow: hidden;
+      transition: filter 2s ease;
+    }
+
+    ha-card.fc-night-dim {
+      filter: brightness(0.25);
     }
 
     .fc-notification {
@@ -685,6 +690,9 @@ export function customStyles(config: FlipClockCardConfig): TemplateResult {
          .fc-meridiem-bottom { color: ${meridiemColor}; }`
       : '',
     buildBackgroundCss(config),
+    config?.nightDim?.brightness != null
+      ? `ha-card.fc-night-dim { filter: brightness(${config.nightDim.brightness}); }`
+      : '',
   ]
     .filter(Boolean)
     .join('\n');
