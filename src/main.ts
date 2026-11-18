@@ -49,15 +49,20 @@ export class FlipClockCard extends LitElement {
       document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') this.resyncClock();
       });
+      // The visibilitychange resync above only ever fires if the page was
+      // backgrounded — on an always-on kiosk display it's never hidden, so
+      // that path never runs. The FlipClock library advances its own
+      // display via requestAnimationFrame using elapsed-real-time math, and
+      // on real hardware over many hours that still drifts a few minutes
+      // (confirmed on two physical kiosk clocks after ~12-24h uptime, even
+      // with the interval-leak fix above in place). Unconditionally
+      // resyncing on a short fixed interval caps how far it can ever drift,
+      // independent of whatever the actual underlying cause is.
+      setInterval(this.resyncClock.bind(this), 30000);
     }
   }
 
-  // Forces the flip-clock back in sync with the real current time. Belt-
-  // and-suspenders alongside the interval-leak fix above: if the tab was
-  // ever hidden/backgrounded for a stretch (which can still throttle
-  // requestAnimationFrame-driven timers even after the leak fix), this
-  // guarantees an immediate correction the moment it becomes visible again,
-  // rather than waiting on a manual reload.
+  // Forces the flip-clock back in sync with the real current time.
   private resyncClock(): void {
     this._date = new Date();
     this.rebuildClock();
