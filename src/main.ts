@@ -58,8 +58,8 @@ export class FlipClockCard extends LitElement {
       // with the interval-leak fix above in place). Unconditionally
       // resyncing on a short fixed interval caps how far it can ever drift,
       // independent of whatever the actual underlying cause is.
-      setInterval(this.resyncClock.bind(this), 30000);
-      setInterval(this.updateNightDim.bind(this), 30000);
+      setInterval(this.resyncClock.bind(this), 15000);
+      setInterval(this.updateNightDim.bind(this), 15000);
       this.updateNightDim();
     }
   }
