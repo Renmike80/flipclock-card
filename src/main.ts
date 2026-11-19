@@ -30,6 +30,7 @@ export class FlipClockCard extends LitElement {
   private _bannerHideTimeout: ReturnType<typeof setTimeout> | null = null;
   private _effectiveFace!: string;
   private _intervalsStarted = false;
+  private _flipClock?: FlipClock;
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
@@ -181,9 +182,21 @@ export class FlipClockCard extends LitElement {
 
   private createClockElement(): HTMLElement | null {
     if (!this._clockFaces.includes(this._effectiveFace)) return null;
+
+    // Each FlipClock instance starts its own permanent requestAnimationFrame
+    // loop on mount (face `autoStart`) and nothing ever stops it on its own —
+    // discarding the old DOM node without calling `.stop()` here leaves that
+    // loop running forever in the background. rebuildClock() replaces this
+    // element every 15s (resyncClock) and on every format toggle, so without
+    // this the loops pile up for as long as the card stays open, congesting
+    // the main thread more and more over many hours of kiosk uptime. That
+    // growing congestion — not an actually-wrong clock value — is what was
+    // showing up as several minutes of visible drift after 12-24h uptime.
+    this._flipClock?.stop();
+
     const el = document.createElement('div');
     el.className = 'fc-now';
-    new FlipClock(el, this._date, {
+    this._flipClock = new FlipClock(el, this._date, {
       face: this._effectiveFace,
       showSeconds: this._config.time.showSeconds,
     });
